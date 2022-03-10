@@ -1,0 +1,74 @@
+version: '3'
+
+services:
+  shared_rabbitmq:
+    container_name: rabbitmq
+    image: 'rabbitmq:3.7-management'
+    restart: unless-stopped
+    ports:
+      - 5630:5672
+      - 8090:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=moruz
+      - RABBITMQ_DEFAULT_PASS=m0ru2
+
+  shared_prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.1.0
+    volumes:
+      - ./etc/prometheus/:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9999:9090
+
+  shop_mysql:
+    container_name: shop-mysql
+    image: mariadb:10.6
+    ports:
+      - 3360:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    healthcheck:
+      test: ["CMD", "mysqladmin", "--user=root", "--password=", "--host=127.0.0.1", "ping", "--silent"]
+      interval: 2s
+      timeout: 10s
+      retries: 10
+    command: ["--default-authentication-plugin=mysql_native_password"]
+
+  shop_order_php:
+    container_name: shop_order_php
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8040:8040"
+      - "9040:9001"
+    volumes:
+      - .:/app:delegated
+    depends_on:
+      - shared_rabbitmq
+      - shared_prometheus
+    command: symfony serve --dir=modules/order/public --port=8040 --force-php-discovery
+
+  shop_voucher_php:
+    container_name: shop_voucher_php
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8030:8030"
+      - "9030:9001"
+    volumes:
+      - .:/app:delegated
+    depends_on:
+      - shared_rabbitmq
+      - shared_prometheus
+      - shop_mysql
+    command: symfony serve --dir=modules/voucher/public --port=8030 --force-php-discovery

@@ -1,0 +1,16 @@
+scrape_configs:
+
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'shop_order_php'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['shop_order_php:8040']
+
+  - job_name: 'shop_voucher_php'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['shop_voucher_php:8030']
