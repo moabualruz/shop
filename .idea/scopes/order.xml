@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="order" pattern="file[shop]:modules/order/public//*||file[shop]:modules/order/migrations//*||file[shop]:modules/order/config//*||file[shop]:modules/order/bin//*||file[shop]:modules/order/src//*" />
+</component>

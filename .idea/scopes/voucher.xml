@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="voucher" pattern="file[shop]:modules/voucher/src//*||file[shop]:modules/voucher/bin//*||file[shop]:modules/voucher/config//*||file[shop]:modules/voucher/migrations//*||file[shop]:modules/voucher/public//*" />
+</component>

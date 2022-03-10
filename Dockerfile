@@ -12,7 +12,8 @@ RUN apk --update upgrade \
         opcache \
         intl \
         zip \
-        pdo_mysql
+        pdo_mysql \
+        sockets
 
 RUN pickle install apcu@5.1.21
 
@@ -26,10 +27,11 @@ RUN sh /root/install-xdebug.sh
 RUN docker-php-ext-enable \
         amqp \
         apcu \
-        opcache
-
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+        opcache \
+        sockets
 
 RUN curl -sS https://get.symfony.com/cli/installer | bash && mv /root/.symfony/bin/symfony /usr/local/bin/symfony
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 COPY etc/infrastructure/php/ /usr/local/etc/php/
